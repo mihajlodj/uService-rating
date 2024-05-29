@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mongo-db:
+    image: mongo
+    expose:
+      - "27017"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: devops123
+      MONGO_INITDB_ROOT_PASSWORD: devops123
+    restart: on-failure
+
+  rating-service:
+    build: .
+    # environment: TODO
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mongo-db
+    restart: on-failure
+
+volumes:
+  postgres-db:

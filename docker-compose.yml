@@ -16,7 +16,7 @@ services:
     build: .
     # environment: TODO
     ports:
-      - "8084:8084"
+      - "8083:8083"
     depends_on:
       - mongo-db
     restart: on-failure

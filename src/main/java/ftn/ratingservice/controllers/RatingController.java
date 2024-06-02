@@ -34,19 +34,20 @@ public class RatingController {
     @PostMapping("/host")
     @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> createHostRating(@RequestBody @Valid HostRatingCreateRequest createRequest) {
-        return null;
+        return ResponseEntity.ok(ratingService.createHostRating(createRequest));
     }
 
     @PutMapping("/host/{id}")
     @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> updateHostRating(@PathVariable String id, @RequestBody @Valid HostRatingUpdateRequest updateRequest) {
-        return null;
+        return ResponseEntity.ok(ratingService.updateHostRating(id, updateRequest));
     }
 
     @DeleteMapping("/host/{id}")
     @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> deleteHostRating(@PathVariable String id) {
-        return null;
+        ratingService.deleteHostRating(id);
+        return ResponseEntity.ok().build();
     }
 
 }

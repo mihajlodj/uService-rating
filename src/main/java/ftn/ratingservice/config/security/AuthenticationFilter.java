@@ -1,4 +1,4 @@
-package ftn.ratingservice.security;
+package ftn.ratingservice.config.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

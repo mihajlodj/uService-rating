@@ -6,6 +6,7 @@ import ftn.ratingservice.services.RatingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,30 +18,33 @@ public class RatingController {
 
     @GetMapping("/host/all/{hostId}")
     public ResponseEntity<?> getHostRatings(@PathVariable String hostId) {
-        return null;
+        return ResponseEntity.ok(ratingService.getHostRatings(hostId));
     }
 
     @GetMapping("host/average/{hostId}")
     public ResponseEntity<?> getAverageHostRating(@PathVariable String hostId) {
-        return null;
+        return ResponseEntity.ok(ratingService.getAverageHostRating(hostId));
     }
 
     @GetMapping("/host/{id}")
     public ResponseEntity<?> getHostRating(@PathVariable String id) {
-        return null;
+        return ResponseEntity.ok(ratingService.getHostRating(id));
     }
 
     @PostMapping("/host")
+    @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> createHostRating(@RequestBody @Valid HostRatingCreateRequest createRequest) {
         return null;
     }
 
     @PutMapping("/host/{id}")
+    @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> updateHostRating(@PathVariable String id, @RequestBody @Valid HostRatingUpdateRequest updateRequest) {
         return null;
     }
 
     @DeleteMapping("/host/{id}")
+    @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> deleteHostRating(@PathVariable String id) {
         return null;
     }

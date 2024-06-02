@@ -7,6 +7,8 @@ services:
       - "27017"
     ports:
       - "27017:27017"
+    networks:
+      - ftn_devops_network
     environment:
       MONGO_INITDB_ROOT_USERNAME: devops123
       MONGO_INITDB_ROOT_PASSWORD: devops123
@@ -14,12 +16,20 @@ services:
 
   rating-service:
     build: .
-    # environment: TODO
+    environment:
+      SPRING_DATA_MONGODB_URI: mongodb://devops123:devops123@mongo-db:27017/devops_rating_db?authSource=admin
+      SPRING_DATA_MONGODB_DATABASE: devops_rating_db
     ports:
       - "8083:8083"
+    networks:
+      - ftn_devops_network
     depends_on:
       - mongo-db
     restart: on-failure
 
+networks:
+  ftn_devops_network:
+    external: true
+
 volumes:
-  postgres-db:
+  mongo-db:

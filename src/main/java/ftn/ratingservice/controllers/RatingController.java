@@ -2,6 +2,8 @@ package ftn.ratingservice.controllers;
 
 import ftn.ratingservice.domain.dtos.HostRatingCreateRequest;
 import ftn.ratingservice.domain.dtos.HostRatingUpdateRequest;
+import ftn.ratingservice.domain.dtos.LodgeRatingCreateRequest;
+import ftn.ratingservice.domain.dtos.LodgeRatingUpdateRequest;
 import ftn.ratingservice.services.RatingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +49,40 @@ public class RatingController {
     @PreAuthorize("hasAuthority('GUEST')")
     public ResponseEntity<?> deleteHostRating(@PathVariable String id) {
         ratingService.deleteHostRating(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/lodge/all/{lodgeId}")
+    public ResponseEntity<?> getLodgeRatings(@PathVariable String lodgeId) {
+        return ResponseEntity.ok(ratingService.getLodgeRatings(lodgeId));
+    }
+
+    @GetMapping("lodge/average/{lodgeId}")
+    public ResponseEntity<?> getAverageLodgeRating(@PathVariable String lodgeId) {
+        return ResponseEntity.ok(ratingService.getAverageLodgeRating(lodgeId));
+    }
+
+    @GetMapping("/lodge/{id}")
+    public ResponseEntity<?> getLodgeRating(@PathVariable String id) {
+        return ResponseEntity.ok(ratingService.getLodgeRating(id));
+    }
+
+    @PostMapping("/lodge")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> createLodgeRating(@RequestBody @Valid LodgeRatingCreateRequest createRequest) {
+        return ResponseEntity.ok(ratingService.createLodgeRating(createRequest));
+    }
+
+    @PutMapping("/lodge/{id}")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> updateLodgeRating(@PathVariable String id, @RequestBody @Valid LodgeRatingUpdateRequest updateRequest) {
+        return ResponseEntity.ok(ratingService.updateLodgeRating(id, updateRequest));
+    }
+
+    @DeleteMapping("/lodge/{id}")
+    @PreAuthorize("hasAuthority('GUEST')")
+    public ResponseEntity<?> deleteLodgeRating(@PathVariable String id) {
+        ratingService.deleteLodgeRating(id);
         return ResponseEntity.ok().build();
     }
 

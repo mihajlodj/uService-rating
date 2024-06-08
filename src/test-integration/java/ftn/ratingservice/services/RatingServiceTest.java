@@ -1,14 +1,15 @@
 package ftn.ratingservice.services;
 
 import ftn.ratingservice.AuthMongoIntegrationTest;
-import ftn.ratingservice.domain.dtos.HostRatingCreateRequest;
-import ftn.ratingservice.domain.dtos.HostRatingDto;
-import ftn.ratingservice.domain.dtos.UserDto;
+import ftn.ratingservice.domain.dtos.*;
 import ftn.ratingservice.domain.entities.HostRating;
+import ftn.ratingservice.domain.entities.LodgeRating;
 import ftn.ratingservice.domain.entities.User;
 import ftn.ratingservice.domain.entities.UserRole;
 import ftn.ratingservice.exception.exceptions.NotFoundException;
 import ftn.ratingservice.repositories.HostRatingRepository;
+import ftn.ratingservice.repositories.LodgeRatingRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,8 +26,16 @@ public class RatingServiceTest extends AuthMongoIntegrationTest {
     private RatingService ratingService;
     @Autowired
     private HostRatingRepository hostRatingRepository;
+    @Autowired
+    private LodgeRatingRepository lodgeRatingRepository;
     @MockBean
     private RestService restService;
+
+    @AfterEach
+    private void cleanup() {
+        hostRatingRepository.deleteAll();
+        lodgeRatingRepository.deleteAll();
+    }
 
     @Test
     public void testGetHostRatings() {
@@ -88,6 +97,65 @@ public class RatingServiceTest extends AuthMongoIntegrationTest {
         assertEquals(5, savedRating.getRating());
     }
 
+    @Test
+    public void testGetLodgeRatings() {
+        createLodgeRatings();
+        String lodgeId = "e49rcab5-d45b-4526-9591-14ef81g7fea6";
+
+        List<LodgeRatingDto> ratings = ratingService.getLodgeRatings(lodgeId);
+        assertEquals(2, ratings.size());
+        assertEquals(lodgeId, ratings.get(0).getLodgeId());
+        assertEquals(lodgeId, ratings.get(1).getLodgeId());
+    }
+
+    @Test
+    public void testGetLodgeRating() {
+        LodgeRating lodgeRating = createLodgeRating();
+
+        LodgeRatingDto lodgeRatingDto = ratingService.getLodgeRating(lodgeRating.getId());
+        assertNotNull(lodgeRatingDto);
+        assertEquals(4, lodgeRatingDto.getRating());
+        assertEquals("Good", lodgeRatingDto.getComment());
+    }
+
+    @Test
+    public void getLodgeRatingNotFound() {
+        String nonExistingId = "non-existing-id";
+        assertThrows(NotFoundException.class, () -> ratingService.getLodgeRating(nonExistingId));
+    }
+
+    @Test
+    public void testGetAverageLodgeRating() {
+        createLodgeRatings();
+        String lodgeId = "e49rcab5-d45b-4526-9591-14ef81g7fea6";
+
+        Double average = ratingService.getAverageLodgeRating(lodgeId);
+        assertEquals(Double.valueOf(3), average);
+    }
+
+    @Test
+    public void testCreateLodgeRating() {
+        authenticateGuest();
+        String hostId = "e49fcab5-d45b-4556-9d91-14e58177fea6";
+        String lodgeId = "e49rcab5-d45b-4526-9591-14ef81g7fea6";
+        LodgeRatingCreateRequest createRequest = LodgeRatingCreateRequest.builder()
+                .rating(5)
+                .comment("Excellent host!")
+                .hostId(hostId)
+                .lodgeId(lodgeId)
+                .build();
+
+        LodgeRatingDto createdLodgeRating = ratingService.createLodgeRating(createRequest);
+
+        assertNotNull(createdLodgeRating);
+        assertNotNull(createdLodgeRating.getId());
+
+        LodgeRating savedRating = lodgeRatingRepository.findById(createdLodgeRating.getId()).orElse(null);
+        assertNotNull(savedRating);
+        assertNotNull(savedRating.getCreatedBy());
+        assertEquals(5, savedRating.getRating());
+    }
+
     private void createHostRatings() {
         hostRatingRepository.saveAll(List.of(
                 HostRating.builder()
@@ -113,6 +181,34 @@ public class RatingServiceTest extends AuthMongoIntegrationTest {
                         .comment("Good")
                         .createdBy(new User("e49fcaa5-d45b-4556-9d91-13e58187fea6", "guest"))
                         .build()
+        );
+    }
+
+    private void createLodgeRatings() {
+        lodgeRatingRepository.saveAll(List.of(
+                LodgeRating.builder()
+                        .hostId("e49fcab5-d45b-4556-9d91-14e58177fea6")
+                        .lodgeId("e49rcab5-d45b-4526-9591-14ef81g7fea6")
+                        .rating(1)
+                        .comment("Bad bad bad")
+                        .createdBy(new User("e49fcaa5-d45b-4556-9d91-13e58187fea6", "guest")).build(),
+                LodgeRating.builder()
+                        .hostId("e49fcab5-d45b-4556-9d91-14e58177fea6")
+                        .lodgeId("e49rcab5-d45b-4526-9591-14ef81g7fea6")
+                        .rating(5)
+                        .comment("Fantastic")
+                        .createdBy(new User("e49fcaa5-d45b-4556-9d91-13e58187fea6", "guest")).build()
+        ));
+    }
+
+    private LodgeRating createLodgeRating() {
+        return lodgeRatingRepository.save(
+                LodgeRating.builder()
+                        .hostId("e49fcab5-d45b-4556-9d91-14e58177fea6")
+                        .lodgeId("e49rcab5-d45b-4526-9591-14ef81g7fea6")
+                        .rating(4)
+                        .comment("Good")
+                        .createdBy(new User("e49fcaa5-d45b-4556-9d91-13e58187fea6", "guest")).build()
         );
     }
 

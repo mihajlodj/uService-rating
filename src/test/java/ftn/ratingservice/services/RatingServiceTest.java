@@ -30,8 +30,9 @@ public class RatingServiceTest {
     void setUp() {
         hostRatingRepository = mock(HostRatingRepository.class);
         lodgeRatingRepository = mock(LodgeRatingRepository.class);
+        NotificationService notificationService = mock(NotificationService.class);
         RestService restService = mock(RestService.class);
-        ratingService = new RatingService(hostRatingRepository, lodgeRatingRepository, restService);
+        ratingService = new RatingService(hostRatingRepository, lodgeRatingRepository, notificationService, restService);
     }
 
     @Test

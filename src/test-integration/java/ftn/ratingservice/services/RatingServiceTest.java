@@ -2,10 +2,7 @@ package ftn.ratingservice.services;
 
 import ftn.ratingservice.AuthMongoIntegrationTest;
 import ftn.ratingservice.domain.dtos.*;
-import ftn.ratingservice.domain.entities.HostRating;
-import ftn.ratingservice.domain.entities.LodgeRating;
-import ftn.ratingservice.domain.entities.User;
-import ftn.ratingservice.domain.entities.UserRole;
+import ftn.ratingservice.domain.entities.*;
 import ftn.ratingservice.exception.exceptions.NotFoundException;
 import ftn.ratingservice.repositories.HostRatingRepository;
 import ftn.ratingservice.repositories.LodgeRatingRepository;
@@ -18,6 +15,9 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 public class RatingServiceTest extends AuthMongoIntegrationTest {
@@ -30,6 +30,8 @@ public class RatingServiceTest extends AuthMongoIntegrationTest {
     private LodgeRatingRepository lodgeRatingRepository;
     @MockBean
     private RestService restService;
+    @MockBean
+    private NotificationService notificationService;
 
     @AfterEach
     private void cleanup() {
@@ -85,6 +87,7 @@ public class RatingServiceTest extends AuthMongoIntegrationTest {
 
         UserDto hostUser = UserDto.builder().role(UserRole.HOST).build();
         when(restService.getUserById(UUID.fromString(hostId))).thenReturn(hostUser);
+        doNothing().when(notificationService).sendNotification(anyString(), any(NotificationType.class));
 
         HostRatingDto createdHostRating = ratingService.createHostRating(createRequest);
 
@@ -144,6 +147,8 @@ public class RatingServiceTest extends AuthMongoIntegrationTest {
                 .hostId(hostId)
                 .lodgeId(lodgeId)
                 .build();
+
+        doNothing().when(notificationService).sendNotification(anyString(), any(NotificationType.class));
 
         LodgeRatingDto createdLodgeRating = ratingService.createLodgeRating(createRequest);
 

@@ -1,10 +1,7 @@
 package ftn.ratingservice.services;
 
 import ftn.ratingservice.domain.dtos.*;
-import ftn.ratingservice.domain.entities.HostRating;
-import ftn.ratingservice.domain.entities.LodgeRating;
-import ftn.ratingservice.domain.entities.User;
-import ftn.ratingservice.domain.entities.UserRole;
+import ftn.ratingservice.domain.entities.*;
 import ftn.ratingservice.domain.mappers.HostRatingMapper;
 import ftn.ratingservice.domain.mappers.LodgeRatingMapper;
 import ftn.ratingservice.exception.exceptions.BadRequestException;
@@ -26,6 +23,7 @@ public class RatingService {
 
     private final HostRatingRepository hostRatingRepository;
     private final LodgeRatingRepository lodgeRatingRepository;
+    private final NotificationService notificationService;
     private final RestService restService;
 
     public List<HostRatingDto> getHostRatings(String hostId) {
@@ -64,7 +62,9 @@ public class RatingService {
                 .build();
         hostRating.setCreatedBy(createdBy);
 
-        return HostRatingMapper.INSTANCE.toDto(hostRatingRepository.save(hostRating));
+        HostRatingDto createdRating = HostRatingMapper.INSTANCE.toDto(hostRatingRepository.save(hostRating));
+        notificationService.sendNotification(hostRating.getHostId(), NotificationType.HOST_RATING);
+        return createdRating;
     }
 
     public HostRatingDto updateHostRating(String id, HostRatingUpdateRequest updateRequest) {
@@ -117,7 +117,9 @@ public class RatingService {
                 .build();
         lodgeRating.setCreatedBy(createdBy);
 
-        return LodgeRatingMapper.INSTANCE.toDto(lodgeRatingRepository.save(lodgeRating));
+        LodgeRatingDto createdRating = LodgeRatingMapper.INSTANCE.toDto(lodgeRatingRepository.save(lodgeRating));
+        notificationService.sendNotification(lodgeRating.getHostId(), NotificationType.HOTEL_RATING);
+        return createdRating;
     }
 
     public LodgeRatingDto updateLodgeRating(String id, LodgeRatingUpdateRequest updateRequest) {

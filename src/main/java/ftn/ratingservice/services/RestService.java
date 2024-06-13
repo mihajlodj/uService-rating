@@ -30,6 +30,8 @@ public class RestService {
     private String jwtSecret;
     @Value("${user.service}")
     private String userServiceUrl;
+    @Value("${reservation.service}")
+    private String reservationServiceUrl;
 
     static final long EXPIRATION_TIME = 30L * 24 * 60 * 60 * 1000; // 1 month
 
@@ -59,7 +61,7 @@ public class RestService {
             headers.set("Authorization", "Bearer " + createAdminToken());
             HttpEntity<String> httpRequest = new HttpEntity<>(headers);
 
-            String url = userServiceUrl + "/api/reservation/check/userhadreservationwithhost/" + AuthUtils.getLoggedUserId() + "/" + hostId;
+            String url = reservationServiceUrl + "/api/reservation/check/userhadreservationwithhost/" + AuthUtils.getLoggedUserId() + "/" + hostId;
             ResponseEntity<ReservationCheckDto> response = restTemplate.exchange(url, HttpMethod.GET, httpRequest, ReservationCheckDto.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
@@ -79,7 +81,7 @@ public class RestService {
             headers.set("Authorization", "Bearer " + createAdminToken());
             HttpEntity<String> httpRequest = new HttpEntity<>(headers);
 
-            String url = userServiceUrl + "/api/reservation/check/userhadreservation/" + AuthUtils.getLoggedUserId() + "/" + lodgeId;
+            String url = reservationServiceUrl + "/api/reservation/check/userhadreservation/" + AuthUtils.getLoggedUserId() + "/" + lodgeId;
             ResponseEntity<ReservationCheckDto> response = restTemplate.exchange(url, HttpMethod.GET, httpRequest, ReservationCheckDto.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {

@@ -89,6 +89,8 @@ public class RatingServiceTest extends AuthMongoIntegrationTest {
         when(restService.getUserById(UUID.fromString(hostId))).thenReturn(hostUser);
         doNothing().when(notificationService).sendNotification(anyString(), any(NotificationType.class));
 
+        when(restService.hasReservationAtHost(anyString())).thenReturn(true);
+
         HostRatingDto createdHostRating = ratingService.createHostRating(createRequest);
 
         assertNotNull(createdHostRating);
@@ -148,6 +150,7 @@ public class RatingServiceTest extends AuthMongoIntegrationTest {
                 .lodgeId(lodgeId)
                 .build();
 
+        when(restService.hasReservationAtLodge(anyString())).thenReturn(true);
         doNothing().when(notificationService).sendNotification(anyString(), any(NotificationType.class));
 
         LodgeRatingDto createdLodgeRating = ratingService.createLodgeRating(createRequest);

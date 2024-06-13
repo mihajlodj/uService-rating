@@ -1,7 +1,9 @@
 package ftn.ratingservice.services;
 
+import ftn.ratingservice.domain.dtos.ReservationCheckDto;
 import ftn.ratingservice.domain.dtos.UserDto;
 import ftn.ratingservice.exception.exceptions.InternalException;
+import ftn.ratingservice.utils.AuthUtils;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +50,46 @@ public class RestService {
         } catch (Exception e) {
             log.error("Error while getting user: ", e);
             throw new InternalException("Unexpected error while getting user");
+        }
+    }
+
+    public boolean hasReservationAtHost(String hostId) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + createAdminToken());
+            HttpEntity<String> httpRequest = new HttpEntity<>(headers);
+
+            String url = userServiceUrl + "/api/reservation/check/userhadreservationwithhost/" + AuthUtils.getLoggedUserId() + "/" + hostId;
+            ResponseEntity<ReservationCheckDto> response = restTemplate.exchange(url, HttpMethod.GET, httpRequest, ReservationCheckDto.class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return response.getBody().isValue();
+            } else {
+                throw new InternalException("Failed to check reservations");
+            }
+        } catch (Exception e) {
+            log.error("Error while checking reservations: ", e);
+            throw new InternalException("Unexpected error while checking reservations");
+        }
+    }
+
+    public boolean hasReservationAtLodge(String lodgeId) {
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + createAdminToken());
+            HttpEntity<String> httpRequest = new HttpEntity<>(headers);
+
+            String url = userServiceUrl + "/api/reservation/check/userhadreservation/" + AuthUtils.getLoggedUserId() + "/" + lodgeId;
+            ResponseEntity<ReservationCheckDto> response = restTemplate.exchange(url, HttpMethod.GET, httpRequest, ReservationCheckDto.class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return response.getBody().isValue();
+            } else {
+                throw new InternalException("Failed to check reservations");
+            }
+        } catch (Exception e) {
+            log.error("Error while checking reservations: ", e);
+            throw new InternalException("Unexpected error while checking reservations");
         }
     }
 

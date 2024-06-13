@@ -67,6 +67,11 @@ public class RatingService {
             throw new BadRequestException("Can't rate non host");
         }
 
+        boolean reservation = restService.hasReservationAtHost(createRequest.getHostId());
+        if (!reservation) {
+            throw new ForbiddenException("Can't rate lodge without reservation");
+        }
+
         HostRating hostRating = HostRatingMapper.INSTANCE.fromCreateRequest(createRequest);
         User createdBy = User.builder()
                 .userId(AuthUtils.getLoggedUserId().toString())
@@ -133,6 +138,11 @@ public class RatingService {
     }
 
     public LodgeRatingDto createLodgeRating(LodgeRatingCreateRequest createRequest) {
+        boolean reservation = restService.hasReservationAtLodge(createRequest.getLodgeId());
+        if (!reservation) {
+            throw new ForbiddenException("Can't rate lodge without reservation");
+        }
+
         LodgeRating lodgeRating = LodgeRatingMapper.INSTANCE.fromCreateRequest(createRequest);
         User createdBy = User.builder()
                 .userId(AuthUtils.getLoggedUserId().toString())

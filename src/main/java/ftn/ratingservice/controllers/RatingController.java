@@ -18,6 +18,16 @@ public class RatingController {
 
     private final RatingService ratingService;
 
+    @GetMapping("/host/me")
+    public ResponseEntity<?> getUserHostRatings(@RequestParam(required = false) String hostId) {
+        return ResponseEntity.ok(ratingService.getUserHostRatings(hostId));
+    }
+
+    @GetMapping("/lodge/me")
+    public ResponseEntity<?> getUserLodgeRatings(@RequestParam(required = false) String lodgeId) {
+        return ResponseEntity.ok(ratingService.getUserLodgeRatings(lodgeId));
+    }
+
     @GetMapping("/host/all/{hostId}")
     public ResponseEntity<?> getHostRatings(@PathVariable String hostId) {
         return ResponseEntity.ok(ratingService.getHostRatings(hostId));

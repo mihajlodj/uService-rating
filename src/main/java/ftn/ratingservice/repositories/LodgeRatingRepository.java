@@ -9,4 +9,8 @@ public interface LodgeRatingRepository extends MongoRepository<LodgeRating, Stri
 
     List<LodgeRating> getAllByLodgeId(String lodgeId);
 
+    List<LodgeRating> getAllByCreatedBy_UserId(String userId);
+
+    List<LodgeRating> getAllByCreatedBy_UserIdAndLodgeId(String userId, String lodgeId);
+
 }

@@ -13,6 +13,7 @@ import ftn.ratingservice.utils.AuthUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,6 +26,17 @@ public class RatingService {
     private final LodgeRatingRepository lodgeRatingRepository;
     private final NotificationService notificationService;
     private final RestService restService;
+
+    public List<HostRatingDto> getUserHostRatings(String hostId) {
+        List<HostRating> ratings;
+        if (hostId != null) {
+            ratings = hostRatingRepository.getAllByCreatedBy_UserIdAndHostId(AuthUtils.getLoggedUserId().toString(), hostId);
+        } else {
+            ratings = hostRatingRepository.getAllByCreatedBy_UserId(AuthUtils.getLoggedUserId().toString());
+        }
+
+        return ratings.stream().map(HostRatingMapper.INSTANCE::toDto).collect(Collectors.toList());
+    }
 
     public List<HostRatingDto> getHostRatings(String hostId) {
         List<HostRating> ratings = hostRatingRepository.getAllByHostId(hostId);
@@ -88,6 +100,17 @@ public class RatingService {
 
     public List<LodgeRatingDto> getLodgeRatings(String lodgeId) {
         List<LodgeRating> ratings = lodgeRatingRepository.getAllByLodgeId(lodgeId);
+        return ratings.stream().map(LodgeRatingMapper.INSTANCE::toDto).collect(Collectors.toList());
+    }
+
+    public List<LodgeRatingDto> getUserLodgeRatings(String lodgeId) {
+        List<LodgeRating> ratings;
+        if (lodgeId != null) {
+            ratings = lodgeRatingRepository.getAllByCreatedBy_UserIdAndLodgeId(AuthUtils.getLoggedUserId().toString(), lodgeId);
+        } else {
+            ratings = lodgeRatingRepository.getAllByCreatedBy_UserId(AuthUtils.getLoggedUserId().toString());
+        }
+
         return ratings.stream().map(LodgeRatingMapper.INSTANCE::toDto).collect(Collectors.toList());
     }
 
